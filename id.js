@@ -1,7 +1,6 @@
 const users = {
     admin: 'admin123',
-    anvesh: 'mypass',
+    user: 'mypass',
     newUser: 'anotherpassword',
-    newPass:"Hello",
-    smrj:"SMRJ12",
 };
+
