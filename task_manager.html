@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Task Manager</title>
+  <script src="https://kit.fontawesome.com/77c4032121.js" crossorigin="anonymous"></script>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    .task { padding: 8px; margin: 5px 0; border: 1px solid #ffffff; border-radius: 5px; }
+    .completed { text-decoration: line-through; color: green; }
+    .by-user { font-size: 0.8em; color: rgb(0, 0, 0); }
+  </style>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #343232;
+      margin: 0;
+      padding: 20px;
+    }
+    .panel {
+      background: rgb(144, 142, 142);
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(228, 221, 221, 0.1);
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+    h2 {
+      margin-top: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #ffffff;
+    }
+    .section {
+      margin-top: 30px;
+    }
+    .img
+    {
+        display: block;
+        margin: auto;
+    }
+  </style>
+</head>
+<body>
+    <img src="img/1000000483-removebg-preview.png" width="15%" class="img">
+    <div class="panel">
+        <h2>Admin Panel</h2>
+  <h2>📋 Task Dashboard</h2>
+
+  <div>
+    <h3>Add Task</h3>
+    <input id="taskInput" placeholder="New task..." />
+    <button onclick="addTask()">➕ Add Task</button>
+    <hr>
+  </div>
+
+  <h3>Tasks</h3>
+  <div id="taskList"></div>
+</div>
+
+  <script>
+    const currentUser = localStorage.getItem("username");
+    const isAdmin = currentUser === "admin";
+
+    // Fetch tasks from the server
+    async function fetchTasks() {
+      const res = await fetch('http://localhost:3000/tasks');
+      const tasks = await res.json();
+      renderTasks(tasks);
+    }
+
+    // Add a task
+    async function addTask() {
+      const text = document.getElementById("taskInput").value.trim();
+      if (!text || !currentUser) {
+        alert("Missing task text or not logged in");
+        return;
+      }
+
+      await fetch('http://localhost:3000/tasks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, username: currentUser })
+      });
+
+      document.getElementById("taskInput").value = "";
+      fetchTasks();
+    }
+
+    // Mark task as done
+    async function markDone(index) {
+      await fetch(`http://localhost:3000/tasks/${index}`, { method: 'PUT' });
+      fetchTasks();
+    }
+
+    // Delete a task (admin only)
+    async function deleteTask(index) {
+      await fetch(`http://localhost:3000/tasks/${index}`, { method: 'DELETE' });
+      fetchTasks();
+    }
+
+    // Render tasks on the page
+    function renderTasks(tasks) {
+      const list = document.getElementById("taskList");
+      list.innerHTML = "";
+
+      tasks.forEach((task, i) => {
+        const div = document.createElement("div");
+        div.className = "task" + (task.done ? " completed" : "");
+        div.innerHTML = `
+          <div>${task.text}</div>
+          <div class="by-user">by ${task.username}</div>
+          ${!task.done ? `<button onclick="markDone(${i})">✅ Done</button>` : ""}
+          ${isAdmin ? `<button onclick="deleteTask(${i})">❌ Delete</button>` : ""}
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    // Fetch tasks when the page loads
+    window.onload = fetchTasks;
+  </script>
+
+<script>
+    if (localStorage.getItem("loggedIn") !== "true") {
+      window.location.href = "login.html";
+    }
+  </script>
+
+  <script>
+    function logout() {
+      localStorage.removeItem("loggedIn");
+      window.location.href = "login.html";
+    }
+  </script>
+
+<p style="text-align: center;"><a href="index.html" style="text-decoration: none; color: #fff;"><i class="fa-solid fa-users-viewfinder"></i> Overview </a> <a href="serverstatus.html" style="text-decoration: none; color: #fff;"><i class="fa-solid fa-server"></i> Server Status </a> <a href="chart.html" style="text-decoration: none; color: #fff;"><i class="fa-solid fa-chart-line"></i> Chart </a></p>
+
+<p style="text-align: right;"><a href="#" onclick="logout()" style="color: #fff; text-decoration: none;"><i class="fa-solid fa-power-off" ></i> Logout</a></p>  
+
+</body>
+</html>

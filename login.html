@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Login</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #343232;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .login-box {
+      background: rgb(144, 142, 142);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      width: 300px;
+    }
+    input, button {
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+    }
+    .error { color: red; margin-top: 10px; }
+    .img
+        {
+            display: block;
+            margin: auto;
+        }
+  </style>
+</head>
+<body>
+  <div class="login-box">
+<img src="img/1000000483-removebg-preview.png" width="75%" class="img">
+    <h2>Admin Login</h2>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="login()">Login</button>
+    <p class="error" id="errorMsg"></p>
+  </div>
+
+  <script>
+    function login() {
+      const correctUsername = document.getElementById("username").value;
+      const correctPassword = document.getElementById("password").value;
+
+      if (username === correctUsername && password === correctPassword) {
+        localStorage.setItem("loggedIn", "true");
+        window.location.href = "index.html";
+      }
+      if (!correctUsername || !correctPassword) {
+    alert("⚠️ Username and password are required!");
+    return;
+  }
+
+  if (users.hasOwnProperty(correctUsername) && users[correctUsername] === correctPassword) {
+  localStorage.setItem("loggedIn", "true");
+  localStorage.setItem("username", correctUsername);
+
+  fetch("http://localhost:3001/log-login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ username: correctUsername })
+  });
+
+  window.location.href = "index.html";
+}
+
+      else {
+        document.getElementById("errorMsg").textContent = "Incorrect username or password.";
+      }
+    }
+  </script>
+  <script src="id.js"></script>
+</body>
+</html>
